@@ -19,7 +19,7 @@ A static website (GitHub Pages–ready) that takes a Spotify track link and show
 
 ## Deploying to GitHub Pages
 
-1. **Settings → Pages → Source: GitHub Actions** (the workflow in `.github/workflows/deploy.yml` handles the deploy).
+1. **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`** → Save.
 2. Push to GitHub: `git push -u origin main`. Every push to `main` redeploys.
 3. The site goes live at `https://a-nelas.github.io/spotify-stats/` within a minute or two.
 
