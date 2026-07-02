@@ -238,8 +238,7 @@ function renderTrack(track) {
     statBox("Explicit", track.explicit ? "Yes" : "No"),
     statBox("Track #", `${track.track_number} of ${track.album.total_tracks}`),
     statBox("Disc", String(track.disc_number)),
-    statBox("Markets", fmtNumber(track.available_markets?.length ?? 0)),
-    statBox("Preview", track.preview_url ? "Available" : "None")
+    statBox("Markets", fmtNumber(track.available_markets?.length ?? 0))
   );
 
   document.getElementById("popularity-value").textContent =
@@ -353,7 +352,6 @@ function renderAlbum(album) {
     statBox("Name", album.name),
     statBox("Released", album.release_date),
     statBox("Tracks", String(album.total_tracks)),
-    statBox("Type", album.album_type),
     statBox("Label", album.label || "—"),
     statBox("Popularity", `${album.popularity}/100`)
   );
