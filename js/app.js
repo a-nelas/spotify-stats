@@ -25,20 +25,10 @@ const els = {
 
 /* ---------- credentials ---------- */
 
-/* localStorage overrides win; otherwise use credentials baked into
- * js/config.js at deploy time (see .github/workflows/deploy.yml). */
 function getCredentials() {
-  const stored = {
-    id: localStorage.getItem(STORAGE_KEYS.clientId),
-    secret: localStorage.getItem(STORAGE_KEYS.clientSecret),
-  };
-  if (stored.id && stored.secret) return stored;
-
-  const baked = window.SPOTIFY_CONFIG || {};
-  if (baked.clientId && baked.clientSecret) {
-    return { id: baked.clientId, secret: baked.clientSecret };
-  }
-  return null;
+  const id = localStorage.getItem(STORAGE_KEYS.clientId);
+  const secret = localStorage.getItem(STORAGE_KEYS.clientSecret);
+  return id && secret ? { id, secret } : null;
 }
 
 function hasCredentials() {
