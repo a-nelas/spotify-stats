@@ -7,7 +7,9 @@ A static website (GitHub Pages–ready) that takes a Spotify track link and show
 ## Setup
 
 1. Create a Spotify app at the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) to get a **Client ID** and **Client Secret**.
-2. Open the site, click ⚙️, and paste your credentials. They are stored only in your browser's localStorage and sent only to Spotify's token endpoint — never committed to this repo or any server.
+2. Provide the credentials one of two ways:
+   - **GitHub Secrets (baked in at deploy):** add `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` as repository secrets. The deploy workflow writes them into `js/config.js` at build time, so visitors don't need to enter anything. ⚠️ Because GitHub Pages is a static site, the injected credentials are visible to anyone who views the deployed site's source — acceptable for a hobby app reading public data (worst case someone uses your rate limit), but don't reuse a secret you care about.
+   - **In the browser:** click ⚙️ on the site and paste credentials. Stored only in your browser's localStorage; overrides any baked-in values.
 3. Paste any Spotify track link (`https://open.spotify.com/track/…`, `spotify:track:…`, or a bare track ID) and hit **Get Stats**.
 
 ## What it shows
@@ -19,9 +21,10 @@ A static website (GitHub Pages–ready) that takes a Spotify track link and show
 
 ## Deploying to GitHub Pages
 
-1. Push to GitHub: `git push -u origin main`
-2. On GitHub: **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `(root)`** → Save.
-3. The site goes live at `https://a-nelas.github.io/spotify-stats/` within a minute or two.
+1. On GitHub: **Settings → Secrets and variables → Actions → New repository secret** — add `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`.
+2. **Settings → Pages → Source: GitHub Actions** (not "Deploy from a branch" — the workflow in `.github/workflows/deploy.yml` handles the build).
+3. Push to GitHub: `git push -u origin main`. Every push to `main` redeploys.
+4. The site goes live at `https://a-nelas.github.io/spotify-stats/` within a minute or two.
 
 ## Tech
 

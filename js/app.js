@@ -25,11 +25,24 @@ const els = {
 
 /* ---------- credentials ---------- */
 
+/* localStorage overrides win; otherwise use credentials baked into
+ * js/config.js at deploy time (see .github/workflows/deploy.yml). */
+function getCredentials() {
+  const stored = {
+    id: localStorage.getItem(STORAGE_KEYS.clientId),
+    secret: localStorage.getItem(STORAGE_KEYS.clientSecret),
+  };
+  if (stored.id && stored.secret) return stored;
+
+  const baked = window.SPOTIFY_CONFIG || {};
+  if (baked.clientId && baked.clientSecret) {
+    return { id: baked.clientId, secret: baked.clientSecret };
+  }
+  return null;
+}
+
 function hasCredentials() {
-  return (
-    localStorage.getItem(STORAGE_KEYS.clientId) &&
-    localStorage.getItem(STORAGE_KEYS.clientSecret)
-  );
+  return getCredentials() !== null;
 }
 
 els.settingsBtn.addEventListener("click", () => {
@@ -71,8 +84,7 @@ async function getToken() {
   const expiry = Number(localStorage.getItem(STORAGE_KEYS.tokenExpiry) || 0);
   if (cached && Date.now() < expiry - 60_000) return cached;
 
-  const id = localStorage.getItem(STORAGE_KEYS.clientId);
-  const secret = localStorage.getItem(STORAGE_KEYS.clientSecret);
+  const { id, secret } = getCredentials();
 
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
