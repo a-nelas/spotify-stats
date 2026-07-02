@@ -15,7 +15,7 @@ A static website (GitHub Pages–ready) that takes a Spotify track link and show
 ## What it shows
 
 - **Track** — duration, explicit flag, track/disc number, market count, and Spotify's **popularity score** (0–100). Exact play counts are not exposed by the official Web API; popularity is Spotify's play-count-derived metric.
-- **Audio features** — danceability, energy, valence, acousticness, instrumentalness, liveness, speechiness, tempo, key, time signature, loudness. ⚠️ Spotify [deprecated this endpoint](https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api) for apps created after Nov 27, 2024; older apps still have access. The site degrades gracefully if unavailable.
+- **Audio features** — danceability, energy, valence, acousticness, instrumentalness, liveness, speechiness, tempo, key, time signature, loudness. ⚠️ Spotify [deprecated this endpoint](https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api) for apps created after Nov 27, 2024; when it returns 403 the site automatically falls back to the free [ReccoBeats API](https://reccobeats.com), which serves the same metrics for Spotify track IDs (minus time signature).
 - **Artists** — followers, popularity, genres, profile image.
 - **Album** — release date, label, track count, popularity.
 

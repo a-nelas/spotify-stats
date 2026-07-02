@@ -126,6 +126,24 @@ async function apiGet(path) {
   return res.json();
 }
 
+/* Fallback for apps without access to Spotify's deprecated audio-features
+ * endpoint: ReccoBeats serves the same metrics for Spotify track IDs
+ * (free, no auth, CORS-enabled). It lacks time_signature. */
+async function fetchReccoBeatsFeatures(trackId) {
+  try {
+    const res = await fetch(
+      `https://api.reccobeats.com/v1/audio-features?ids=${trackId}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const features = data.content?.[0];
+    if (!features) return null;
+    return { ...features, source: "ReccoBeats" };
+  } catch {
+    return null;
+  }
+}
+
 /* ---------- link parsing ---------- */
 
 function parseTrackId(raw) {
@@ -241,7 +259,7 @@ function renderAudioFeatures(features) {
     const p = document.createElement("p");
     p.className = "hint";
     p.textContent =
-      "Audio features are unavailable for this app. Spotify deprecated this endpoint for API apps created after November 27, 2024 — apps created before then still work.";
+      "Audio features are unavailable for this track — Spotify deprecated the endpoint for newer API apps, and the ReccoBeats fallback has no data for it.";
     wrap.append(p);
     return;
   }
@@ -267,10 +285,20 @@ function renderAudioFeatures(features) {
   grid.append(
     statBox("Tempo", `${Math.round(features.tempo)} BPM`),
     statBox("Key", key),
-    statBox("Time signature", `${features.time_signature}/4`),
     statBox("Loudness", `${features.loudness.toFixed(1)} dB`)
   );
+  if (Number.isFinite(features.time_signature)) {
+    grid.append(statBox("Time signature", `${features.time_signature}/4`));
+  }
   wrap.append(grid);
+
+  if (features.source) {
+    const credit = document.createElement("p");
+    credit.className = "hint";
+    credit.textContent =
+      `Provided by ${features.source} (Spotify's audio-features endpoint is unavailable for this app).`;
+    wrap.append(credit);
+  }
 }
 
 function renderArtists(artists) {
@@ -362,7 +390,9 @@ els.form.addEventListener("submit", async (e) => {
       apiGet(`artists?ids=${artistIds}`),
       apiGet(`albums/${track.album.id}`),
       apiGet(`audio-features/${trackId}`).catch((err) => {
-        if (err.status === 403 || err.status === 404) return null;
+        if (err.status === 403 || err.status === 404) {
+          return fetchReccoBeatsFeatures(trackId);
+        }
         throw err;
       }),
     ]);
